@@ -1,0 +1,336 @@
+package jframe;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
+/**
+ *
+ * @author Karina Ganich
+ * 
+ * Class for view all records page
+ */
+public class ViewRecords extends javax.swing.JFrame {
+    
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ViewRecords.class.getName());
+
+    DefaultTableModel model;
+    
+    /**
+     * Creates new form ViewRecords
+     */
+    public ViewRecords() {
+        initComponents();
+        setIssueBookDetailsToTable();
+    }
+    
+    /**
+     * Method for setting issue book details into table
+     */
+    public void setIssueBookDetailsToTable(){
+        try {
+            Connection conn = DBConnection.getConnection();
+            Statement st = conn.createStatement();
+            
+            // Create issue book table if not exists
+            String createTableSQL = "CREATE TABLE IF NOT EXISTS issue_book_details ("
+                    + "id INT AUTO_INCREMENT PRIMARY KEY,"
+                    + "book_id INT,"
+                    + "book_name VARCHAR(255),"
+                    + "student_id INT,"
+                    + "student_name VARCHAR(255),"
+                    + "issue_date DATE,"
+                    + "due_date DATE,"
+                    + "status VARCHAR(255))";
+            st.execute(createTableSQL);
+            
+            st = conn.createStatement();
+            ResultSet rs = st.executeQuery("select * from issue_book_details");
+            
+            while(rs.next()){
+                String id = rs.getString("id");
+                String bookName = rs.getString("book_name");
+                String studentName = rs.getString("student_name");
+                String issueDate = rs.getString("issue_date");
+                String dueDate = rs.getString("due_date");
+                String status = rs.getString("status");
+                
+                Object[] obj = {id, bookName, studentName, issueDate, dueDate, status};
+                model = (DefaultTableModel) tbl_issueBookDetails.getModel();
+                model.addRow(obj);
+             }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Method for clearing the table
+     */
+    public void clearTable(){
+        DefaultTableModel model = (DefaultTableModel) tbl_issueBookDetails.getModel();
+        model.setRowCount(0);
+    }
+    
+    /**
+     * Method for fetching record using date fields
+     */
+    public void search(){
+        java.util.Date from = date_from.getDatoFecha();
+        java.util.Date to = date_to.getDatoFecha();
+        
+        Date fromDate = new Date(from.getTime());
+        Date toDate = new Date(to.getTime());
+        
+        try {
+            Connection conn = DBConnection.getConnection();
+            Statement st = conn.createStatement();
+            
+            // Create issue book table if not exists
+            String createTableSQL = "CREATE TABLE IF NOT EXISTS issue_book_details ("
+                    + "id INT AUTO_INCREMENT PRIMARY KEY,"
+                    + "book_id INT,"
+                    + "book_name VARCHAR(255),"
+                    + "student_id INT,"
+                    + "student_name VARCHAR(255),"
+                    + "issue_date DATE,"
+                    + "due_date DATE,"
+                    + "status VARCHAR(255))";
+            st.execute(createTableSQL);
+            
+            st = conn.createStatement();
+            String sql = "select * from issue_book_details where issue_date BETWEEN ? to ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setDate(1, fromDate);
+            ps.setDate(2, toDate);
+            ResultSet rs = ps.executeQuery();
+            
+            if (!rs.next()){
+                JOptionPane.showMessageDialog(this, "No record found");
+            } else {
+                while(rs.next()){
+                String id = rs.getString("id");
+                String bookName = rs.getString("book_name");
+                String studentName = rs.getString("student_name");
+                String issueDate = rs.getString("issue_date");
+                String dueDate = rs.getString("due_date");
+                String status = rs.getString("status");
+                
+                Object[] obj = {id, bookName, studentName, issueDate, dueDate, status};
+                model = (DefaultTableModel) tbl_issueBookDetails.getModel();
+                model.addRow(obj);
+               }
+            }
+            
+            
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel1 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        date_from = new rojeru_san.componentes.RSDateChooser();
+        jLabel14 = new javax.swing.JLabel();
+        date_to = new rojeru_san.componentes.RSDateChooser();
+        rSMaterialButtonCircle1 = new necesario.RSMaterialButtonCircle();
+        rSMaterialButtonCircle2 = new necesario.RSMaterialButtonCircle();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tbl_issueBookDetails = new rojeru_san.complementos.RSTableMetro();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(1390, 860));
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel1.setBackground(new java.awt.Color(204, 102, 255));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel4.setFont(new java.awt.Font("Katari", 1, 30)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setText("View records");
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 30, -1, -1));
+
+        jLabel2.setFont(new java.awt.Font("Katari", 0, 18)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8_Rewind_48px.png"))); // NOI18N
+        jLabel2.setText("Back");
+        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel2MouseClicked(evt);
+            }
+        });
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, -1, -1));
+
+        jLabel12.setFont(new java.awt.Font("Katari", 1, 17)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel12.setText("Issue date:");
+        jPanel1.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 130, -1, -1));
+
+        date_from.setBackground(new java.awt.Color(153, 102, 255));
+        date_from.setForeground(new java.awt.Color(153, 102, 255));
+        date_from.setAutoscrolls(true);
+        date_from.setColorBackground(new java.awt.Color(153, 102, 255));
+        date_from.setColorButtonHover(new java.awt.Color(153, 102, 255));
+        date_from.setColorForeground(new java.awt.Color(153, 102, 255));
+        date_from.setColorSelForeground(new java.awt.Color(153, 102, 255));
+        date_from.setColorTextDiaActual(new java.awt.Color(153, 102, 255));
+        date_from.setFont(new java.awt.Font("Katari", 0, 13)); // NOI18N
+        date_from.setFuente(new java.awt.Font("Katari", 1, 14)); // NOI18N
+        date_from.setPlaceholder("Select from date");
+        jPanel1.add(date_from, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 120, -1, -1));
+
+        jLabel14.setFont(new java.awt.Font("Katari", 1, 17)); // NOI18N
+        jLabel14.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel14.setText("Issue date:");
+        jPanel1.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 130, -1, -1));
+
+        date_to.setBackground(new java.awt.Color(153, 102, 255));
+        date_to.setForeground(new java.awt.Color(153, 102, 255));
+        date_to.setAutoscrolls(true);
+        date_to.setColorBackground(new java.awt.Color(153, 102, 255));
+        date_to.setColorButtonHover(new java.awt.Color(153, 102, 255));
+        date_to.setColorForeground(new java.awt.Color(153, 102, 255));
+        date_to.setColorSelForeground(new java.awt.Color(153, 102, 255));
+        date_to.setColorTextDiaActual(new java.awt.Color(153, 102, 255));
+        date_to.setFont(new java.awt.Font("Katari", 0, 13)); // NOI18N
+        date_to.setFuente(new java.awt.Font("Katari", 1, 14)); // NOI18N
+        date_to.setPlaceholder("Select to date");
+        jPanel1.add(date_to, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 120, -1, -1));
+
+        rSMaterialButtonCircle1.setBackground(new java.awt.Color(153, 102, 255));
+        rSMaterialButtonCircle1.setText("SEARCH");
+        rSMaterialButtonCircle1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rSMaterialButtonCircle1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(rSMaterialButtonCircle1, new org.netbeans.lib.awtextra.AbsoluteConstraints(930, 100, 170, 80));
+
+        rSMaterialButtonCircle2.setBackground(new java.awt.Color(204, 51, 255));
+        rSMaterialButtonCircle2.setText("ALL");
+        rSMaterialButtonCircle2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rSMaterialButtonCircle2ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(rSMaterialButtonCircle2, new org.netbeans.lib.awtextra.AbsoluteConstraints(1140, 100, 180, 80));
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1380, 240));
+
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        tbl_issueBookDetails.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Id", "Book name", "Student name", "Issue date", "Due date", "Status"
+            }
+        ));
+        tbl_issueBookDetails.setColorBackgoundHead(new java.awt.Color(204, 102, 255));
+        tbl_issueBookDetails.setColorFilasBackgound2(new java.awt.Color(255, 255, 255));
+        tbl_issueBookDetails.setColorFilasForeground1(new java.awt.Color(204, 102, 255));
+        tbl_issueBookDetails.setColorFilasForeground2(new java.awt.Color(204, 102, 255));
+        tbl_issueBookDetails.setColorSelBackgound(new java.awt.Color(204, 102, 255));
+        tbl_issueBookDetails.setFont(new java.awt.Font("Katari", 0, 13)); // NOI18N
+        tbl_issueBookDetails.setFuenteFilas(new java.awt.Font("Katari", 1, 14)); // NOI18N
+        tbl_issueBookDetails.setFuenteFilasSelect(new java.awt.Font("Katari", 1, 14)); // NOI18N
+        tbl_issueBookDetails.setFuenteHead(new java.awt.Font("Katari", 1, 18)); // NOI18N
+        tbl_issueBookDetails.setIntercellSpacing(new java.awt.Dimension(1, 1));
+        tbl_issueBookDetails.setRowHeight(40);
+        tbl_issueBookDetails.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tbl_issueBookDetailsMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tbl_issueBookDetails);
+
+        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 60, 1110, 490));
+
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 240, 1380, 610));
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
+        HomePage page = new HomePage();
+        page.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_jLabel2MouseClicked
+
+    private void tbl_issueBookDetailsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbl_issueBookDetailsMouseClicked
+        
+    }//GEN-LAST:event_tbl_issueBookDetailsMouseClicked
+
+    private void rSMaterialButtonCircle1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSMaterialButtonCircle1ActionPerformed
+        if (date_from.getDatoFecha() != null && date_to.getDatoFecha() != null) {
+            clearTable();
+            search();
+        } else {
+            JOptionPane.showMessageDialog(this, "please select date");
+        }
+        
+    }//GEN-LAST:event_rSMaterialButtonCircle1ActionPerformed
+
+    private void rSMaterialButtonCircle2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSMaterialButtonCircle2ActionPerformed
+        clearTable();
+        setIssueBookDetailsToTable();
+    }//GEN-LAST:event_rSMaterialButtonCircle2ActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(() -> new ViewRecords().setVisible(true));
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private rojeru_san.componentes.RSDateChooser date_from;
+    private rojeru_san.componentes.RSDateChooser date_to;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private necesario.RSMaterialButtonCircle rSMaterialButtonCircle1;
+    private necesario.RSMaterialButtonCircle rSMaterialButtonCircle2;
+    private rojeru_san.complementos.RSTableMetro tbl_issueBookDetails;
+    // End of variables declaration//GEN-END:variables
+}
